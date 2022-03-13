@@ -1,6 +1,8 @@
 const express = require("express");
+const mongoose = require('mongoose');
 const router = express.Router();
 const {check,validationResult} = require('express-validator');
+const Registration = mongoose.model('Registration');
 
 // router.get('/', function(req,res){
 //     res.send('It works!');
@@ -27,7 +29,14 @@ router.post('/',
         // console.log(req.body);
         const errors = validationResult(req);
         if(errors.isEmpty()){
-            res.send('Thank you for your registration!');
+            const registration = new Registration(req.body);
+            registration.save()
+            .then(() => 
+            {res.send('Thank you for your registration!');})
+            .catch((err) => {
+                console.log(err);
+                res.send('Sorry! Something went wrong.');
+            });
         } else {
         res.render('form', { title: 'Registration form',
                             errors : errors.array(),
